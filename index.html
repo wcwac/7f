@@ -2,109 +2,87 @@
 <html lang="en">
 
 <head>
-   <meta charset="utf-8">
-   <title>ONS Online</title>
-   <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-      rel="stylesheet" type="text/css">
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
-   <link href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.1.1/css/mdb.min.css" rel="stylesheet">
-   <link href="libretro.css" rel="stylesheet" type="text/css">
-   <link rel="shortcut icon" href="media/retroarch.ico" />
+    <meta charset="utf-8">
+    <title>ONScripter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.1.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/browserfs@1.4.3/dist/browserfs.min.js"></script>
 </head>
 
-<body>
-   <nav class="navbar navbar-dark bg-primary">
-      <div class="container">
-         <div class="navbar-toggleable-xs" style="width: 100%;">
-            <ul class="nav navbar-nav">
-               <div class="dropdown">
-                  <li class="nav-item dropdown">
-                     <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>Core Selection</button>
-                     <div class="dropdown-menu dropdown-primary" aria-labelledby="dropdownMenu1"
-                        data-dropdown-in="fadeIn" data-dropdown-out="fadeOut" id="core-selector">
-                        <a class="dropdown-item" href="." data-core="onscripter">ONScripter</a>
-                     </div>
-                     <button class="btn btn-primary" id="btnRun" onclick="startRetroArch()" disabled>
-                        <span class="fa fa-spinner fa-spin" id="icnRun"></span> Run
-                     </button>
-                     <button class="btn btn-primary" id="btnAdd"
-                        onclick="document.getElementById('btnRom').click()" disabled>
-                        <span class="fa fa-plus" id="icnAdd"></span> Add Content
-                     </button>
-                     <button class="btn btn-primary tooltip-enable" id="btnClean" onclick="cleanupStorage();"
-                        title="Cleanup storage" disabled>
-                        <span class="fa fa-trash-o" id="icnClean"></span> <span class="sr-only">Cleanup</span>
-                     </button>
-                     <input class="btn btn-primary" style="display: none" type="file" id="btnRom" name="upload"
-                        onclick="document.getElementById('btnAdd').click();" onchange="selectFiles(event.target.files)"
-                        multiple />
-                     <button class="btn btn-primary tooltip-enable" id="btnMenu" onclick="keyPress('F1');"
-                        title="Menu toggle" disabled>
-                        <span class="fa fa-bars" id="btnMenu"></span> <span class="sr-only">Menu</span>
-                     </button>
-                     <button class="btn btn-primary tooltip-enable" id="btnFullscreen"
-                        onclick="Module.requestFullscreen(false)" title="Fullscreen" disabled>
-                        <span class="fa fa-desktop" id="icnAdd"></span> <span class="sr-only">Fullscreen</span>
-                     </button>
-                     </button>
-                     <button type="button" class="btn btn-primary tooltip-enable" data-toggle="modal"
-                        data-target="#helpModal" disabled>Help</button>
-                     <button class="btn btn-primary" id="btnHideMenu" title="Toggle Menu"
-                        style="float: right;">
-                        <span class="fa fa-chevron-up" id="icnHideMenu"></span> <span class="sr-only">Hide Top
-                           Navigation</span>
-                     </button>
-                  </li>
-               </div>
-            </ul>
-         </div>
-         <!-- Basics steps modal for Web Libretro -->
-         <div class="modal fade" id="helpModal" role="dialog" style="color:black;">
-            <div class="modal-dialog modal-lg">
-               <div class="modal-content">
-                  <div class="modal-header">
-                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                     <h1 class="modal-title">Basics</h1>
-                  </div>
-                  <div class="modal-body">
-                     <h3><b>Load Core</b></h3>
-                     <p>Load your core by clicking on the first tab. Scroll down until you reach the desired Core. We
-                        will use Nestopia for now. Don't forget - Content must be compatible with the matched Core.</p>
-                  </div>
-                  <div class="modal-footer">
-                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!--/.navbar content-->
-      </div>
-   </nav>
-   <center class="bg-inverse webplayer-container">
-      <div class="webplayer_border center" id="canvas_div">
-         <div class="showMenu">
-            <button type="button" class="btn btn-link">
-               <span class="fa fa-chevron-down" id="icnShowMenu"></span> <span class="sr-only">Show Top
-                  Navigation</span>
-            </button>
-         </div>
-         <canvas class="webplayer" id="canvas" tabindex="1" oncontextmenu="event.preventDefault()"
-            style="display: none"></canvas>
-         <img class="webplayer-preview img-fluid" src="media/canvas.png"
-            alt="RetroArch Logo">
-      </div>
-   </center>
+<body style="text-align: center;background: black">
+<canvas id="canvas" oncontextmenu="event.preventDefault()" style="margin: 0px"></canvas>
 
-   <script src="https://cdn.jsdelivr.net/npm/jquery@3.1.0/dist/jquery.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/jquery.hotkeys@0.1.0/jquery.hotkeys.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/tether@1.3.4/dist/js/tether.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/browserfs@1.4.3/dist/browserfs.min.js"></script>
-   <script src="libretro.js"></script>
+<script>
+    var BrowserFS = BrowserFS
+    var afs
+
+    var Module = {
+        // noInitialRun: true,
+        arguments: ['-v', '--menu'],
+        preRun: [],
+        postRun: [],
+        print: function (text) {
+            console.log(text)
+        },
+        printErr: function (text) {
+            console.log(text)
+        },
+        canvas: document.getElementById('canvas'),
+        totalDependencies: 0,
+        monitorRunDependencies: function (left) {
+            this.totalDependencies = Math.max(this.totalDependencies, left)
+        }
+    }
+
+    function setScale() {
+        const view = document.getElementById('canvas')
+        view.style.position = 'absolute'
+        view.style.backfaceVisibility = 'hidden'
+        view.style.transformOrigin = 'left top'
+        const ratio = Math.min(window.innerWidth / 800, window.innerHeight / 600)
+        view.style.transform = `scale(${ratio})`
+        view.style.left = `${(window.innerWidth - 800 * ratio) / 2}px`
+        view.style.top = `${(window.innerHeight - 600 * ratio) / 2}px`
+        view.style.height = '600px'
+        view.style.width = '800px'
+    }
+
+    $(function () {
+        document.body.parentNode.style.overflow = "hidden"
+        $.getScript(
+            'https://cdn.jsdelivr.net/gh/wcwac/em-onscripter@package/onscripter.js',
+            () => {
+                var imfs = new BrowserFS.FileSystem.InMemory()
+                if (BrowserFS.FileSystem.IndexedDB.isAvailable()) {
+                    afs = new BrowserFS.FileSystem.AsyncMirror(imfs,
+                        new BrowserFS.FileSystem.IndexedDB(function (e, fs) {
+                            if (e)
+                                afs = new BrowserFS.FileSystem.InMemory()
+                            else {
+                                afs.initialize(e => {
+                                    if (e) afs = new BrowserFS.FileSystem.InMemory()
+                                })
+                            }
+                            var mfs = new BrowserFS.FileSystem.MountableFileSystem()
+                            var xfs = new BrowserFS.FileSystem.XmlHttpRequest('xfs.json')
+                            mfs.mount('/home', xfs)
+                            mfs.mount('/home/data', afs)
+                            BrowserFS.initialize(mfs)
+                            var BFS = new BrowserFS.EmscriptenFS()
+                            FS.mount(BFS, {root: '/home'}, '/home')
+                        }, 'ONScripter')
+                    )
+                }
+
+                setScale()
+            }
+        )
+        window.addEventListener('resize', () => {
+            setScale()
+        }, false)
+    })
+
+</script>
 </body>
 
 </html>

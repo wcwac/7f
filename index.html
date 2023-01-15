@@ -50,7 +50,7 @@
     $(function () {
         document.body.parentNode.style.overflow = "hidden"
         $.getScript(
-            'https://cdn.jsdelivr.net/gh/wcwac/em-onscripter@gh-pages/onscripter.js',
+            'https://cdn.jsdelivr.net/gh/wcwac/em-onscripter@package/onscripter.js',
             () => {
                 var imfs = new BrowserFS.FileSystem.InMemory()
                 if (BrowserFS.FileSystem.IndexedDB.isAvailable()) {
